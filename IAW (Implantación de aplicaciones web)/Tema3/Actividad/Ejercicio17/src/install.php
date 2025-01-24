@@ -18,12 +18,12 @@ CREATE TABLE IF NOT EXISTS users (
 ";
 
 // Ejecutar la consulta
-$respuesta = $db->query($sql);
+$respuesta = $conn->query($sql);
 
 // Verificar si la tabla fue creada exitosamente
 if ($respuesta) {
     echo "La tabla 'users' se ha creado correctamente.";
 } else {
-    echo "Error al crear la tabla: " . $db->error;
+    echo "Error al crear la tabla: " . $conn->error;
 }
 ?>
