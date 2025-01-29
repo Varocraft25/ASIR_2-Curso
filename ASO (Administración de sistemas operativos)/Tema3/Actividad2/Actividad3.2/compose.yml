@@ -1,0 +1,15 @@
+services:
+  nfs:
+    build:
+      context: .
+    privileged: true
+    volumes:
+      - ./carpetacompartidaASO:/home/carpetacompartidaASO:rw
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - NFS_EXPORT_0=/home/carpetacompartidaASO *(rw)
+    ports:
+      - 2049:2049
+    security_opt:
+      - apparmor=unconfined
