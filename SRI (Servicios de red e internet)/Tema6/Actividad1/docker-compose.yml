@@ -1,0 +1,67 @@
+services:
+  openfire:
+    image: sameersbn/openfire:latest
+    container_name: openfire
+    restart: always
+    ports:
+      - "9090:9090"  # Consola de administración Web
+      - "9091:9091"  # Consola de administración Web (HTTPS)
+    volumes:
+      - openfire_data:/var/lib/openfire
+    networks:
+      - openfire_network
+
+  openfire_windows_1:
+    image: mcr.microsoft.com/windows/servercore:ltsc2019
+    container_name: openfire_windows_1
+    networks:
+      - openfire_network
+    command: powershell -Command "Start-Process -FilePath 'C:\\path\\to\\openfire_4_9_2_x64.exe' -ArgumentList '/S' -Wait"
+    # Additional configuration for RDP would be needed here
+
+  openfire_windows_2:
+    image: mcr.microsoft.com/windows/servercore:ltsc2019
+    container_name: openfire_windows_2
+    networks:
+      - openfire_network
+    command: powershell -Command "Start-Process -FilePath 'C:\\path\\to\\openfire_4_9_2_x64.exe' -ArgumentList '/S' -Wait"
+    # Additional configuration for RDP would be needed here
+
+  guacamole:
+    image: guacamole/guacamole
+    container_name: guacamole
+    ports:
+      - "8080:8080"  # Guacamole web interface
+    networks:
+      - openfire_network
+    depends_on:
+      - guacd
+    environment:
+      GUACD_HOSTNAME: guacd
+      MYSQL_HOSTNAME: mysql
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: guacamole_password
+
+  guacd:
+    image: guacamole/guacd
+    container_name: guacd
+    networks:
+      - openfire_network
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    networks:
+      - openfire_network
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: guacamole_password
+
+volumes:
+  openfire_data:
+
+networks:
+  openfire_network:
