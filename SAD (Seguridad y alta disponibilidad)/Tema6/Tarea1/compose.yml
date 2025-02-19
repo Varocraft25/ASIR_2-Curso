@@ -1,0 +1,21 @@
+services:
+  apache:
+    image: httpd:latest
+    container_name: apache-container
+    ports:
+      - "80:80"
+    networks:
+      - my-network
+
+  ubuntu:
+    image: ubuntu:latest
+    container_name: ubuntu-container
+    command: sleep infinity
+    networks:
+      - my-network
+    tty: true
+    stdin_open: true
+
+networks:
+  my-network:
+    driver: bridge
