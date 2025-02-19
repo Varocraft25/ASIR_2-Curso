@@ -1,0 +1,17 @@
+services:
+  firewall:
+    image: ubuntu
+    container_name: firewall-container
+    privileged: true  # Permite modificar iptables
+    networks:
+      my_network:
+        ipv4_address: 192.168.1.100
+    command: ["/bin/bash", "-c", "/firewall.sh"]
+    volumes:
+      - ./firewall.sh:/firewall.sh
+
+networks:
+  my_network:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
