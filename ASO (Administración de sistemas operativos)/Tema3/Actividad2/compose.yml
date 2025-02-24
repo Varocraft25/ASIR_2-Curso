@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  nfs-server:
+    image: itsthenetwork/nfs-server-alpine
+    container_name: nfs-server
+    privileged: true
+    restart: always
+    environment:
+      - SHARED_DIRECTORY=/home/carpetacompartidaASO
+    volumes:
+      - nfs-data:/home/carpetacompartidaASO
+    ports:
+      - "2049:2049"
+    command: >
+      sh -c "echo 'NFS (Network File System) permite compartir archivos y directorios entre sistemas a través de la red, facilitando el acceso remoto a datos de forma eficiente y transparente.' > /home/carpetacompartidaASO/info.txt &&
+             exec /entrypoint.sh"
+
+  nfs-client:
+    image: ubuntu
+    container_name: nfs-client
+    privileged: true
+    depends_on:
+      - nfs-server
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "apt update &&
+             apt install -y nfs-common &&
+             mkdir -p /mnt/nfs &&
+             mount -o vers=4 nfs-server:/home/carpetacompartidaASO /mnt/nfs &&
+             sleep infinity"
+    volumes:
+      - nfs-data:/mnt/nfs
+
+volumes:
+  nfs-data:
+    driver: local
